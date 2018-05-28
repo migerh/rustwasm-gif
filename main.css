@@ -1,0 +1,9 @@
+#gif-file-drop {
+  width: 250px;
+  height: 250px;
+  background-color: lightgray;
+  border: 1px solid black;
+  text-align: center;
+  display: table-cell;
+  vertical-align: middle;
+}
