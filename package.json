@@ -3,11 +3,16 @@
     "serve": "webpack-dev-server"
   },
   "devDependencies": {
+    "ts-loader": "^4.4.1",
+    "typescript": "^2.9.2",
     "webpack": "^4.0.1",
     "webpack-cli": "^2.0.10",
     "webpack-dev-server": "^3.1.0"
   },
   "dependencies": {
+    "@types/core-js": "^2.5.0",
+    "@types/events": "^1.2.0",
+    "@types/node": "^10.3.5",
     "events": "^3.0.0",
     "gif": "file:pkg"
   }
