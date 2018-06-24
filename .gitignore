@@ -7,3 +7,5 @@ gif.js
 gif.d.ts
 gif_bg.wasm
 pkg/
+wasm-pack.log
+.vscode
