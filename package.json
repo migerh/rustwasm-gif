@@ -13,7 +13,9 @@
     "@types/core-js": "^2.5.0",
     "@types/events": "^1.2.0",
     "@types/node": "^10.3.5",
+    "@types/uuid": "^3.4.3",
     "events": "^3.0.0",
-    "gif": "file:pkg"
+    "gif": "file:pkg",
+    "uuid": "^3.2.1"
   }
 }

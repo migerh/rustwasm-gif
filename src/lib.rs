@@ -16,6 +16,22 @@ extern "C" {
     fn log(s: &str);
 }
 
+/// Import progress report module so we can keep the user up to date
+/// during the gif encoding.
+#[wasm_bindgen(module = "./../src/progress")]
+extern "C" {
+  type Progress;
+
+  #[wasm_bindgen(method, js_name = addItem)]
+  fn add_item(this: &Progress, id: &str, name: &str, number_of_frames: usize);
+
+  #[wasm_bindgen(method)]
+  fn report(this: &Progress, id: &str, current_frame: usize);
+
+  #[wasm_bindgen(js_name = getProgress)]
+  fn get_progress() -> Progress;
+}
+
 /// Tuples are apparently not supported by wasm-bindgen atm
 /// so we'll use our own datastructure.
 #[wasm_bindgen]
@@ -114,17 +130,20 @@ fn collect_frames(reader: &mut Reader<&[u8]>, width: u16, height: u16) -> Vec<Fr
 /// Creates a gif from a set of frames and a color palette
 ///
 /// The `global_palette` may be an empty vector.
-fn gif_from_frames(frames: &mut Vec<FrameData>, width: u16, height: u16, global_palette: Vec<u8>) -> Vec<u8> {
+fn gif_from_frames(frames: &mut Vec<FrameData>, width: u16, height: u16, global_palette: Vec<u8>, id: &str) -> Vec<u8> {
+  let progress = get_progress();
+
   let mut buffer = Vec::new();
   {
     let mut encoder = Encoder::new(&mut buffer, width, height, &global_palette).unwrap();
     encoder.set(Repeat::Infinite).unwrap();
 
-    for frame in frames.iter() {
+    for (i, frame) in frames.iter().enumerate() {
       let delay = frame.delay;
       let mut frame = Frame::from_rgba(frame.width, frame.height, &mut frame.rgba.to_vec());
       frame.delay = delay;
       encoder.write_frame(&frame).unwrap();
+      progress.report(id, i+1);
     }
   }
 
@@ -133,8 +152,10 @@ fn gif_from_frames(frames: &mut Vec<FrameData>, width: u16, height: u16, global_
 
 /// Reverses a gif
 #[wasm_bindgen]
-pub fn reverse_gif(data: &[u8]) -> Vec<u8> {
+pub fn reverse_gif(id: &str, name: &str, data: &[u8]) -> Vec<u8> {
   console_error_panic_hook::set_once();
+
+  let progress = get_progress();
 
   log("enter");
   let mut reader = decode_data(data);
@@ -145,8 +166,10 @@ pub fn reverse_gif(data: &[u8]) -> Vec<u8> {
   log("read frames");
   let mut frames = collect_frames(&mut reader, width, height);
 
+  progress.add_item(id, name, frames.len());
+
   frames.reverse();
 
   log("write buffer");
-  gif_from_frames(&mut frames, width, height, global_palette)
+  gif_from_frames(&mut frames, width, height, global_palette, id)
 }
