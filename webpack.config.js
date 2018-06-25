@@ -1,7 +1,9 @@
 const path = require('path');
 
 module.exports = {
-  entry: "./src/index.ts",
+  entry: {
+    main: './src/index.ts'
+  },
   devtool: 'inline-source-map',
   module: {
     rules: [
@@ -12,16 +14,18 @@ module.exports = {
       },
       {
         test: /\.wasm$/,
-        type: "webassembly/experimental"
+        type: 'javascript/auto',
+        loaders: ['file-loader'],
       }
     ]
   },
   output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "index.js",
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].js',
+    globalObject: 'self'
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.wasm']
   },
-  mode: "development"
+  mode: 'development'
 };

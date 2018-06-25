@@ -1,13 +1,18 @@
 {
   "scripts": {
-    "serve": "webpack-dev-server"
+    "serve": "webpack-dev-server",
+    "cargo": "cargo build --target wasm32-unknown-unknown --release",
+    "bindgen": "wasm-bindgen target/wasm32-unknown-unknown/release/gif.wasm --no-modules --out-dir ./pkg",
+    "build-wasm": "npm run cargo && npm run bindgen"
   },
   "devDependencies": {
+    "file-loader": "^1.1.11",
     "ts-loader": "^4.4.1",
     "typescript": "^2.9.2",
     "webpack": "^4.0.1",
     "webpack-cli": "^2.0.10",
-    "webpack-dev-server": "^3.1.0"
+    "webpack-dev-server": "^3.1.0",
+    "worker-loader": "^2.0.0"
   },
   "dependencies": {
     "@types/core-js": "^2.5.0",

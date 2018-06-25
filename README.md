@@ -11,8 +11,7 @@ with wasm from JS and vice versa.
 Notable involved libraries:
 
 * [gif][gif] for the heavy lifting
-* [wasm-bindgen][wasm-bindgen] for the rust/js interface
-* [wasm-pack][wasm-pack] to compile rust to an npm package
+* [wasm-bindgen][wasm-bindgen] for the rust/js interface and a js wrapper
 * [webpack][webpack] to bundle everything together
 
 ## Quickstart
@@ -39,8 +38,8 @@ First you need to switch to the nightly channel and install wasm-pack with
 rustup install nightly
 rustup default nightly
 
-# install wasm-pack
-cargo install wasm-pack
+# install wasm-bindgen command line tools
+cargo install wasm-bindgen-cli
 ```
 
 ### Build the project
@@ -51,7 +50,13 @@ dev server:
 
 ```sh
 # compile rust code to a wasm module
-wasm-pack init
+cargo build --target wasm32-unknown-unknown --release
+
+# generate a wrapper script
+wasm-bindgen target/wasm32-unknown-unknown/release/gif.wasm --no-modules --out-dir ./pkg
+
+# there's also a convenience npm script that executes the two commands for you
+npm run build-wasm
 
 # install javascript dependencies
 npm install
@@ -70,5 +75,4 @@ This project is licensed under the MIT license.
 [nodejs]: https://nodejs.org/
 [rustup.rs]: https://rustup.rs/
 [wasm-bindgen]: https://github.com/rustwasm/wasm-bindgen
-[wasm-pack]: https://github.com/rustwasm/wasm-pack
 [webpack]: https://webpack.js.org/

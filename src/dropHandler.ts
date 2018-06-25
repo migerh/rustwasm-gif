@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 
 // A small helper class that registers drag&drop events on the given
-// element and emits drop events for every gif that is dropped.
+// element and emits an event for every gif that is dropped.
 export default class DropHandler extends EventEmitter {
   private _node: HTMLElement;
 
