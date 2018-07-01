@@ -1,7 +1,7 @@
 import DropHandler from './dropHandler';
-import {GifReverser, GifProcessingResult} from './gifReverser';
+import {GifReverser, ReversedGif, ProgressEvent} from './gifReverser';
 import FileConverter from './fileConverter';
-import {Progress, ProgressItem} from './progress';
+import { GifDisplay } from './gifDisplay';
 
 // This glues everything together. The Drophandler listens for drop events on
 // the drop html element. Once a gif drops it will be passed over to the
@@ -10,34 +10,31 @@ import {Progress, ProgressItem} from './progress';
 // everything up backwards.
 
 // First we initialize the gif processor and…
-const gifProcessor = new GifReverser();
+const gifProcessor = new GifReverser(),
+  rootNodeId = 'resultContainer';
 
-// …define what happens when it finishes…
-gifProcessor.on('finished', async function(data: GifProcessingResult) {
+// …define what happens when a job is finished.
+const createJobFinishedHandler = (display: GifDisplay, filename: string) => async function(data: ReversedGif) {
   const {buffer, reversedBuffer} = data;
   const originalGifData = await FileConverter.convertToDataUrl(buffer);
   const reversedGifData = await FileConverter.convertToDataUrl(reversedBuffer);
 
-  document.getElementById('original-gif').setAttribute('src', originalGifData);
-  document.getElementById('reversed-gif').setAttribute('src', reversedGifData);
-});
-
-// …resp. what happens when an error occurs.
-gifProcessor.on('error', (event: ErrorEvent) => {
-  console.error(`An error occurred while processing a gif:\n${event.error}\n${event.message}`);
-})
+  display.showGifs(filename, originalGifData, reversedGifData);
+};
 
 // Then we define what happens on a progress event.
-const progress = Progress.getInstance();
-progress.on('progress', (item: ProgressItem) => {
-  const progressBar = <HTMLProgressElement> document.getElementById('gif-progress');
-  progressBar.max = item.numberOfFrames;
-  progressBar.value = item.framesFinished;
-});
+const createJobProgressHandler = (display: GifDisplay) => (item: ProgressEvent) => {
+  display.updateProgress(item.currentFrame, item.numberOfFrames);
+};
 
 // Finally we set up the trigger for everything above.
 const dropHandler = new DropHandler('gif-file-drop');
 dropHandler.on('drop', async function handleDrop(file: File) {
-  await gifProcessor.process(file);
+
+  const job = await gifProcessor.process(file),
+    display = new GifDisplay(file.name, rootNodeId);
+
+  job.on('progress', createJobProgressHandler(display));
+  job.on('finished', createJobFinishedHandler(display, file.name));
 });
 

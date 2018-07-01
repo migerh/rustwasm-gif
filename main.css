@@ -8,7 +8,7 @@
   vertical-align: middle;
 }
 
-#gif-progress {
+.gif-progress {
   border: 1px solid black;
   width: 252px;
 }
