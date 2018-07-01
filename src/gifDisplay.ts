@@ -2,10 +2,6 @@ export class GifDisplay {
   private _root: HTMLElement;
   private _container: HTMLDivElement;
   private _progress: HTMLProgressElement;
-  private _title: HTMLHeadingElement;
-  private _titleText: Text;
-  private _originalGif: HTMLAnchorElement;
-  private _reversedGif: HTMLAnchorElement;
 
   constructor(public name: string, root: string) {
     this._root = document.getElementById(root);
@@ -13,12 +9,13 @@ export class GifDisplay {
     this._progress = document.createElement('progress');
     this._progress.classList.add('gif-progress');
 
-    this._title = document.createElement('h3');
-    this._titleText = document.createTextNode(name);
-    this._title.appendChild(this._titleText);
+    const title = document.createElement('h3'),
+      titleText = document.createTextNode(name);
+    title.appendChild(titleText);
 
     this._container = document.createElement('div');
-    this._container.appendChild(this._title);
+    this._container.classList.add('single-result');
+    this._container.appendChild(title);
     this._container.appendChild(this._progress);
 
     if (this._root.childNodes.length > 0) {
@@ -47,10 +44,31 @@ export class GifDisplay {
 
   public showGifs(filename: string, original: string, reversed: string) {
     this._container.removeChild(this._progress);
-    this._originalGif = this._createImage(original, filename);
-    this._reversedGif = this._createImage(reversed, `${filename}-reversed.gif`);
-    this._container.appendChild(this._originalGif);
-    this._container.appendChild(this._reversedGif);
+
+    const originalGif = this._createImage(original, filename),
+      reversedGif = this._createImage(reversed, `${filename}-reversed.gif`);
+
+    this._container.appendChild(originalGif);
+    this._container.appendChild(reversedGif);
+  }
+
+  public showError(message: string, stack: string) {
+    this._container.removeChild(this._progress);
+    const errorDisplay = document.createElement('div');
+
+    errorDisplay.innerHTML = `
+    <div class="error">
+      It seems like I can't reverse that gif. Here are some details if you want to
+      <a class="error" href="https://github.com/migerh/rustwasm-gif/issues/new">file an issue</a>:
+    </div>
+    <div class="error">
+      ${message}
+    </div>
+    <div>
+      ${stack.replace(/\n/g, '<br />')}
+    </div>`;
+
+    this._container.appendChild(errorDisplay);
   }
 }
 

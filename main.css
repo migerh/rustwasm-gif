@@ -12,3 +12,7 @@
   border: 1px solid black;
   width: 252px;
 }
+
+.error {
+  font-weight: bolder;
+}

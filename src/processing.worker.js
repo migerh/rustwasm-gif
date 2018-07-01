@@ -42,21 +42,31 @@ const gifModule = self.wasm_bindgen(wasmPath);
 
 // Once we get a message from the main thread we can start processing the gif.
 self.addEventListener('message', async (event) => {
-  const { id, name, buffer } = event.data;
+  try {
+    const { id, name, buffer } = event.data;
 
-  // Make sure the wasm module is fully initialized.
-  await gifModule;
-  const gif = self.wasm_bindgen;
+    // Make sure the wasm module is fully initialized.
+    await gifModule;
+    const gif = self.wasm_bindgen;
 
-  // Reverse the gif.
-  const reversedBuffer = gif.reverse_gif(id, name, buffer);
+    // Reverse the gif.
+    const reversedBuffer = gif.reverse_gif(id, name, buffer);
 
-  // Tell the main thread that we're finished.
-  self.postMessage({
-    type: 'finished',
-    id,
-    name,
-    buffer,
-    reversedBuffer
-  });
+    // Tell the main thread that we're finished.
+    self.postMessage({
+      type: 'finished',
+      id,
+      name,
+      buffer,
+      reversedBuffer
+    });
+  } catch (e) {
+    self.postMessage({
+      type: 'error',
+      id: event.data.id,
+      name: event.data.name,
+      message: e.message,
+      stack: e.stack
+    })
+  }
 });

@@ -1,5 +1,5 @@
 import DropHandler from './dropHandler';
-import {GifReverser, ReversedGif, ProgressEvent} from './gifReverser';
+import {GifReverser, ReversedGif, ProgressEvent, ProcessingErrorEvent} from './gifReverser';
 import FileConverter from './fileConverter';
 import { GifDisplay } from './gifDisplay';
 
@@ -14,17 +14,22 @@ const gifProcessor = new GifReverser(),
   rootNodeId = 'resultContainer';
 
 // …define what happens when a job is finished.
-const createJobFinishedHandler = (display: GifDisplay, filename: string) => async function(data: ReversedGif) {
-  const {buffer, reversedBuffer} = data;
+const createJobFinishedHandler = (display: GifDisplay) => async function(data: ReversedGif) {
+  const {name, buffer, reversedBuffer} = data;
   const originalGifData = await FileConverter.convertToDataUrl(buffer);
   const reversedGifData = await FileConverter.convertToDataUrl(reversedBuffer);
 
-  display.showGifs(filename, originalGifData, reversedGifData);
+  display.showGifs(name, originalGifData, reversedGifData);
 };
 
 // Then we define what happens on a progress event.
 const createJobProgressHandler = (display: GifDisplay) => (item: ProgressEvent) => {
   display.updateProgress(item.currentFrame, item.numberOfFrames);
+};
+
+const createErrorHandler = (display: GifDisplay) => (event: ProcessingErrorEvent) => {
+  const {message, stack} = event;
+  display.showError(message, stack);
 };
 
 // Finally we set up the trigger for everything above.
@@ -35,6 +40,7 @@ dropHandler.on('drop', async function handleDrop(file: File) {
     display = new GifDisplay(file.name, rootNodeId);
 
   job.on('progress', createJobProgressHandler(display));
-  job.on('finished', createJobFinishedHandler(display, file.name));
+  job.on('finished', createJobFinishedHandler(display));
+  job.on('error', createErrorHandler(display));
 });
 

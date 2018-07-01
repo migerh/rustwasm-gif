@@ -83,6 +83,11 @@ export class GifReverser {
         this._distributeJobs();
         job.emit('finished', <ReversedGif>data);
         break;
+      case 'error':
+        this._removeJobById(id);
+        this._makeWorkerAvailable(<Worker>event.target);
+        this._distributeJobs();
+        job.emit('error', <ProcessingErrorEvent>data);
     }
   }
 
@@ -142,13 +147,28 @@ type FinishedEventData = {
   reversedBuffer: Uint8Array;
 }
 
-type MessageEventData = RegisterProgressEventData | ReportProgressEventData | FinishedEventData;
+type ErrorEventData = {
+  type: 'error',
+  id: string;
+  name: string;
+  message: string;
+  stack: string;
+}
+
+type MessageEventData = RegisterProgressEventData | ReportProgressEventData | FinishedEventData | ErrorEventData;
 
 export class ProgressEvent {
   id: string;
   name: string;
   currentFrame: number;
   numberOfFrames: number;
+}
+
+export class ProcessingErrorEvent {
+  id: string;
+  name: string;
+  message: string;
+  stack: string;
 }
 
 export class ReversedGif {
