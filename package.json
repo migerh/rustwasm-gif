@@ -3,7 +3,8 @@
     "serve": "webpack-dev-server",
     "cargo": "cargo build --target wasm32-unknown-unknown --release",
     "bindgen": "wasm-bindgen target/wasm32-unknown-unknown/release/gif.wasm --no-modules --out-dir ./pkg",
-    "build-wasm": "npm run cargo && npm run bindgen"
+    "build-wasm": "npm run cargo && npm run bindgen",
+    "build-pages": "sh build-pages.sh"
   },
   "devDependencies": {
     "file-loader": "^1.1.11",
