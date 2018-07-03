@@ -88,28 +88,59 @@ fn collect_frames(reader: &mut Reader<&[u8]>, width: u16, height: u16) -> Vec<Fr
     let mut frames = Vec::new();
     let mut full_frame: Vec<u8> = Vec::new();
 
+    // allocate enough memory to fit in a full sized frame
+    // width * height is the number of pixels and times 4 for the color channels (r, g, b, and a)
+    full_frame.resize((width as usize) * (height as usize) * (4 as usize), 0);
+
     // extract the single frames from the gif
     while let Some(frame) = reader.read_next_frame().unwrap() {
         // todo: try to get rid of this copy
         let buffer = frame.buffer.to_vec();
 
-        // make sure we have enough data to fit the whole frame into our full_frame buffer
-        // but do not make it smaller!
-        // usually the first frame should be the biggest so this hould be called only once
-        if buffer.len() > full_frame.len() {
-            full_frame.resize(buffer.len(), 0);
-        }
+        // some frames may be smaller than the whole image. we need to calculate
+        // the correct index to map the frame to the correct parts of the full_frame.
+        //
+        //  full_frame   -   width
+        // +-------------------------------------------------------+
+        // | frame  top        frame width                         |
+        // |  left   +---------------------------------------+     | full_frame
+        // |         |                                 frame |     | height
+        // |         |                                height |     |
+        // |         +---------------------------------------+     |
+        // +-------------------------------------------------------+
+        //
+        // see also the index calculation inside the loop.
+        // to calculate the correct index in the full_frame buffer from the index `i`
+        // in the frame buffer we first have to add frame `top` number of lines:
+        //
+        //        top * (width as usize)
+        //
+        // this is done in the constant_offset. For every full line inside the frame -
+        // determined with `i / frame_width` - we add another line:
+        //
+        //        (i / frame_width) * (width as usize)
+        //
+        // all that is left to do now is add the constant left offset and advance the
+        // same number of pixels in the full_frame buffer as we do in the frame buffer,
+        // that is the remainder of the division above:
+        //
+        //         (i % frame_width)
+        let left = frame.left as usize;
+        let top = frame.top as usize;
+        let frame_width = frame.width as usize;
+        let constant_offset = top * (width as usize) + left;
 
-        // desperate attempt to remove these strange artifacts
         // copy the current frame buffer over the full_frame buffer, but only if the
         // current pixel is not opaque AND we have a full pixel. That last part should
         // always be true, but it's there anyway just in case.
         for (i, pixel) in buffer.chunks(4).enumerate() {
-            if pixel[3] != 0 && pixel.len() == 4 {
-                full_frame[i * 4 + 0] = pixel[0];
-                full_frame[i * 4 + 1] = pixel[1];
-                full_frame[i * 4 + 2] = pixel[2];
-                full_frame[i * 4 + 3] = pixel[3];
+            if pixel.len() == 4 && pixel[3] != 0 {
+                let index =
+                    constant_offset + (i / frame_width) * (width as usize) + (i % frame_width);
+                full_frame[index * 4 + 0] = pixel[0];
+                full_frame[index * 4 + 1] = pixel[1];
+                full_frame[index * 4 + 2] = pixel[2];
+                full_frame[index * 4 + 3] = pixel[3];
             }
         }
 
