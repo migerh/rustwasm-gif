@@ -21,7 +21,6 @@
     "@types/node": "^10.3.5",
     "@types/uuid": "^3.4.3",
     "events": "^3.0.0",
-    "gif": "file:pkg",
     "uuid": "^3.2.1"
   }
 }
