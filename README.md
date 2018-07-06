@@ -31,7 +31,7 @@ cargo --version
 npm --version
 ```
 
-First you need to switch to the nightly channel and install wasm-pack with
+First you need to switch to the nightly channel and install wasm-bindgen with
 
 ```sh
 # install & switch to the nightly channel
@@ -45,7 +45,7 @@ cargo install wasm-bindgen-cli
 ### Build the project
 
 To build the project you have to compile the rust code to a wasm module,
-install a few JavaScript tools and librarie and then you can start the webpack
+install a few JavaScript tools and libraries and then you can start the webpack
 dev server:
 
 ```sh
