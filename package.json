@@ -8,19 +8,19 @@
   },
   "devDependencies": {
     "file-loader": "^1.1.11",
-    "ts-loader": "^4.4.1",
+    "ts-loader": "^4.5.0",
     "typescript": "^2.9.2",
-    "webpack": "^4.0.1",
-    "webpack-cli": "^2.0.10",
-    "webpack-dev-server": "^3.1.0",
+    "webpack": "^4.26.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10",
     "worker-loader": "^2.0.0"
   },
   "dependencies": {
     "@types/core-js": "^2.5.0",
     "@types/events": "^1.2.0",
-    "@types/node": "^10.3.5",
-    "@types/uuid": "^3.4.3",
+    "@types/node": "^10.12.10",
+    "@types/uuid": "^3.4.4",
     "events": "^3.0.0",
-    "uuid": "^3.2.1"
+    "uuid": "^3.3.2"
   }
 }
