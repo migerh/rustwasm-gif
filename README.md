@@ -31,13 +31,9 @@ cargo --version
 npm --version
 ```
 
-First you need to switch to the nightly channel and install wasm-bindgen with
+First you need to install wasm-bindgen with
 
 ```sh
-# install & switch to the nightly channel
-rustup install nightly
-rustup default nightly
-
 # install wasm-bindgen command line tools
 cargo install wasm-bindgen-cli
 ```
@@ -59,7 +55,7 @@ wasm-bindgen target/wasm32-unknown-unknown/release/gif.wasm --no-modules --out-d
 npm run build-wasm
 
 # install javascript dependencies
-npm install
+npm ci
 
 # run dev server
 npm run serve
