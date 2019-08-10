@@ -1,4 +1,3 @@
-
 // The FileReader reads files and returns their content in
 // a buffer.
 export default class FileConverter {
