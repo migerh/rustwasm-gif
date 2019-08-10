@@ -1,4 +1,3 @@
-
 // The FileReader reads files and returns their content in
 // a buffer.
 export default class FileConverter {
@@ -10,7 +9,8 @@ export default class FileConverter {
       let reader = new FileReader();
 
       reader.onload = function (event) {
-        const buffer = event.target.result;
+        const fileReader = <FileReader> event.target;
+        const buffer = <ArrayBuffer> fileReader.result;
 
         resolve(new Uint8Array(buffer));
       };
@@ -26,7 +26,8 @@ export default class FileConverter {
       const reader = new FileReader();
 
       reader.onload = function (event) {
-        const buffer = <string> event.target.result;
+        const fileReader = <FileReader> event.target;
+        const buffer = <string> fileReader.result;
 
         resolve(buffer);
       }

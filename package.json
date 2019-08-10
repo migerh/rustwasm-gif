@@ -7,21 +7,20 @@
     "build-pages": "sh build-pages.sh"
   },
   "devDependencies": {
-    "file-loader": "^1.1.11",
-    "ts-loader": "^4.4.1",
-    "typescript": "^2.9.2",
-    "webpack": "^4.0.1",
-    "webpack-cli": "^2.0.10",
-    "webpack-dev-server": "^3.1.0",
+    "file-loader": "^3.0.1",
+    "ts-loader": "^5.4.5",
+    "typescript": "^3.5.3",
+    "webpack": "^4.39.1",
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.8.0",
     "worker-loader": "^2.0.0"
   },
   "dependencies": {
-    "@types/core-js": "^2.5.0",
-    "@types/events": "^1.2.0",
-    "@types/node": "^10.3.5",
-    "@types/uuid": "^3.4.3",
+    "@types/core-js": "^2.5.2",
+    "@types/events": "^3.0.0",
+    "@types/node": "^10.14.15",
+    "@types/uuid": "^3.4.5",
     "events": "^3.0.0",
-    "gif": "file:pkg",
-    "uuid": "^3.2.1"
+    "uuid": "^3.3.2"
   }
 }
