@@ -1,0 +1,18 @@
+#gif-file-drop {
+  width: 250px;
+  height: 250px;
+  background-color: lightgray;
+  border: 1px solid black;
+  text-align: center;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.gif-progress {
+  border: 1px solid black;
+  width: 252px;
+}
+
+.error {
+  font-weight: bolder;
+}
