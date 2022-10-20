@@ -49,7 +49,7 @@ dev server:
 cargo build --target wasm32-unknown-unknown --release
 
 # generate a wrapper script
-wasm-bindgen target/wasm32-unknown-unknown/release/gif.wasm --no-modules --out-dir ./pkg
+wasm-bindgen target/wasm32-unknown-unknown/release/gif.wasm --target bundler --out-dir ./pkg
 
 # there's also a convenience npm script that executes the two commands for you
 npm run build-wasm
