@@ -1,6 +1,9 @@
 const path = require('path');
 
 module.exports = {
+  experiments: {
+    asyncWebAssembly: true,
+  },
   entry: {
     main: './src/index.ts'
   },
@@ -11,11 +14,6 @@ module.exports = {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
-      },
-      {
-        test: /\.wasm$/,
-        type: 'javascript/auto',
-        use: 'file-loader',
       },
     ]
   },
