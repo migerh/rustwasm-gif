@@ -2,8 +2,7 @@ extern crate console_error_panic_hook;
 extern crate gif;
 extern crate wasm_bindgen;
 
-use gif::SetParameter;
-use gif::{ColorOutput, Decoder, Encoder, Frame, Reader, Repeat};
+use gif::{ColorOutput, DecodeOptions, Decoder, Encoder, Frame, Repeat};
 use std::vec::Vec;
 use wasm_bindgen::prelude::*;
 
@@ -41,13 +40,13 @@ struct FrameData {
 /// Input is a u8 slice which corresponds to a Uint8Array in JavaScript.
 #[wasm_bindgen]
 pub fn get_dimension(data: &[u8]) -> Dimension {
-    let mut decoder = Decoder::new(data);
+    let mut decoder = DecodeOptions::new();
 
     // Configure the decoder such that it will expand the image to RGBA.
-    decoder.set(ColorOutput::RGBA);
+    decoder.set_color_output(ColorOutput::RGBA);
 
     // Read the file header
-    let decoder = decoder.read_info().unwrap();
+    let decoder = decoder.read_info(data).unwrap();
 
     Dimension {
         width: decoder.width(),
@@ -56,14 +55,15 @@ pub fn get_dimension(data: &[u8]) -> Dimension {
 }
 
 // Instantiate a gif reader from the byte slice
-fn decode_data(data: &[u8]) -> Reader<&[u8]> {
-    let mut decoder = Decoder::new(data);
-    decoder.set(ColorOutput::RGBA);
-    decoder.read_info().unwrap()
+fn decode_data(data: &[u8]) -> Decoder<&[u8]> {
+    let mut decoder = DecodeOptions::new();
+    decoder.set_color_output(ColorOutput::RGBA);
+
+    decoder.read_info(data).unwrap()
 }
 
 /// Reads global metadata from the gif like
-fn metadata(reader: &Reader<&[u8]>) -> (u16, u16, Vec<u8>) {
+fn metadata(reader: &Decoder<&[u8]>) -> (u16, u16, Vec<u8>) {
     let width = reader.width();
     let height = reader.height();
     let mut global_palette: Vec<u8> = Vec::new();
@@ -82,7 +82,7 @@ fn metadata(reader: &Reader<&[u8]>) -> (u16, u16, Vec<u8>) {
 /// decoded. Gifs can sometime contain only partial images of just the areas that change from
 /// one frame to the next. This may cause reversed gifs to look funny because only parts of the
 /// image are rendered.
-fn collect_frames(reader: &mut Reader<&[u8]>, width: u16, height: u16) -> Vec<FrameData> {
+fn collect_frames(reader: &mut Decoder<&[u8]>, width: u16, height: u16) -> Vec<FrameData> {
     let mut frames = Vec::new();
     let mut full_frame: Vec<u8> = Vec::new();
 
@@ -169,7 +169,7 @@ fn gif_from_frames(
     let mut buffer = Vec::new();
     {
         let mut encoder = Encoder::new(&mut buffer, width, height, &global_palette).unwrap();
-        encoder.set(Repeat::Infinite).unwrap();
+        encoder.set_repeat(Repeat::Infinite).unwrap();
 
         for (i, frame) in frames.iter().enumerate() {
             let delay = frame.delay;

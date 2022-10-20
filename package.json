@@ -2,7 +2,7 @@
   "scripts": {
     "serve": "webpack-dev-server",
     "cargo": "cargo build --target wasm32-unknown-unknown --release",
-    "bindgen": "wasm-bindgen target/wasm32-unknown-unknown/release/gif.wasm --no-modules --out-dir ./pkg",
+    "bindgen": "wasm-bindgen target/wasm32-unknown-unknown/release/gif.wasm --target no-modules --out-dir ./pkg",
     "build-wasm": "npm run cargo && npm run bindgen",
     "build-pages": "sh build-pages.sh"
   },
