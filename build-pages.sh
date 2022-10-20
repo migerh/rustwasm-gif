@@ -1,15 +1,24 @@
 #!/bin/sh
 
-# Clean up previous builds. webpack will generate a main.js, a <hash>.wasm
-# module and one <hash>.worker.js.
-git rm main.js
-find . -maxdepth 1 -name '*.wasm' -exec git rm {} \;
-find . -maxdepth 1 -name '*.worker.js' -exec git rm {} \;
+set -e
 
-# Rebuild the application
-./node_modules/.bin/webpack-cli --output-path .
+# Clean up previous builds
+git rm -rf dist/
+rm -rf target/
 
-# Add the freshly built js/wasm modules
-git add main.js
-git add ./*.wasm
-git add ./*.worker.js
+# Build Rust into a wasm module
+cargo build --target wasm32-unknown-unknown --release
+wasm-bindgen target/wasm32-unknown-unknown/release/gif.wasm --target bundler --out-dir ./pkg
+
+# Build the application
+./node_modules/.bin/webpack --output-path dist/
+cp public/* dist/
+
+git add dist/
+
+# Leave a hint what to do now
+echo All done. Commit the contents of the dist/ folder and then push them to
+echo GitHub Pages with
+echo
+echo   git subtree push --prefix dist gh gh-pages
+echo
