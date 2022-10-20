@@ -34,7 +34,7 @@ require("../pkg/gif");
 // the webpack file-loader. This loader will copy the wasm file to the output
 // folder and this require only gives us the path to the wasm module which can
 // then be passd to the init function of the wasm_bindgen wrapper.
-const wasmPath = require('../pkg/gif_bg.wasm');
+const wasmPath = require('../pkg/gif_bg.wasm').default;
 
 // Initialize the wasm module. We get back a promise that resolves once the
 // wasm module was successfully initialized.

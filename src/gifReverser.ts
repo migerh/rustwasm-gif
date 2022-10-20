@@ -2,7 +2,6 @@ import { v4 } from 'uuid';
 import { EventEmitter } from 'events';
 
 import FileConverter from './fileConverter';
-import Worker from 'worker-loader!./processing.worker';
 
 export class GifReverser {
   private _jobs: GifReversalJob[];
@@ -16,7 +15,7 @@ export class GifReverser {
     this._jobs = [];
     this._jobsWaitingForWorker = [];
 
-    this._workers = Array.from(Array(this._numberOfWorkers).keys()).map(() => new Worker());
+    this._workers = Array.from(Array(this._numberOfWorkers).keys()).map(() => new Worker(new URL('./processing.worker', import.meta.url)));
     this._workers.forEach(w => w.onmessage = this._handleMessage.bind(this));
     this._workers.forEach(w => w.onerror = this._handleError.bind(this));
 

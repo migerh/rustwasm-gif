@@ -1,4 +1,4 @@
-
+/dist
 /target
 **/*.rs.bk
 Cargo.lock
